@@ -1,0 +1,38 @@
+Sprint 1: Projektaufbau & Architektur (ca. 2 Wochen)
+•	Ziele: 
+o	Einrichtung der Entwicklungsumgebung und des Versionskontrollsystems (z. B. Git).
+o	Festlegung der Projektordnerstruktur (trennung zwischen Backend und Frontend).
+o	Erstellung des Grundgerüsts (Basislayout, HTML/CSS mit Bootstrap).
+o	Aufsetzen der Datenbank und Entwurf des Datenmodells (Produkte, Kunden, Bestellungen, Gutscheine).
+o	Planung der Schnittstelle: Definition, wie Daten (JSON) zwischen Frontend und Backend ausgetauscht werden.
+•	Schwerpunkt: 
+o	Technische Infrastruktur und Architektur
+o	Grundlegende Projektorganisation und Setup
+Sprint 2: Produktpräsentation und Verwaltung (ca. 2 Wochen)
+•	Ziele: 
+o	Umsetzung der Präsentationsseite: Darstellung des Produktkatalogs, Detailseiten für Produkte.
+o	Implementierung der Verwaltungsfunktionen für Produkte im Admin-Bereich (CRUD-Operationen).
+o	Anbindung des Backends an das Frontend über JSON-Schnittstellen.
+o	Erste UI-Komponenten mit responsivem Design (Bootstrap).
+•	Schwerpunkt: 
+o	Funktionale Frontend- und Backend-Entwicklung für Produktfeatures
+o	Erste Integration der Kommunikationsschnittstelle (API-Calls via AJAX)
+Sprint 3: Warenkorb, Kundenverwaltung und Bestellprozesse (ca. 2 Wochen)
+•	Ziele: 
+o	Entwicklung der Warenkorb-Funktionalität (Hinzufügen, Entfernen, Aktualisieren von Artikeln).
+o	Implementierung der Kundenverwaltung: Registrierung, Login, Profilerstellung und -verwaltung.
+o	Umsetzung des Bestellprozesses: Bestellung aufgeben, Auftragsbestätigung und ggf. Rechnungserstellung.
+o	Integration von Sessions, Cookies und Sicherheitsmechanismen.
+•	Schwerpunkt: 
+o	Kernfunktionen, die den Abschluss eines Kaufs ermöglichen
+o	Sicherstellung der Datenvalidierung und des reibungslosen Ablaufs zwischen Kunde, Warenkorb und Bestellung
+Sprint 4: Gutscheine, Administrationsbereich, Integration & Test (ca. 2 Wochen)
+•	Ziele: 
+o	Implementierung der Gutscheinverwaltung: Anlegen, Verwalten und Einlösen von Gutscheinen.
+o	Ausbau des Administrationsbereichs: Übersicht über Bestellungen, Kundenstatistiken, Produktreports.
+o	Integration aller Module und Durchführung von Systemtests (Integrationstests, Usability-Tests).
+o	Bugfixing, Performance-Optimierung und abschließende Dokumentation.
+o	Vorbereitung des Deployments (z. B. Erstellung von Deployment-Skripten, Setup von Test- und Live-Umgebungen).
+•	Schwerpunkt: 
+o	Finalisierung der restlichen Funktionen
+o	Systemintegration, Qualitätssicherung und Deploymentvorbereitung
