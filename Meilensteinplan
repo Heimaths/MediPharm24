@@ -1,0 +1,24 @@
+Meilensteinplan
+Die folgenden Meilensteine korrespondieren mit dem Abschluss jedes Sprints und der Freigabe von Kernfunktionen:
+
+Meilenstein 1: Projektsetup und Architektur (Ende Sprint 1) 
+o	Fertigstellung der Entwicklungsumgebung, Ordnerstruktur und Datenbankdesign.
+o	Grundlegende API-Spezifikationen (JSON-Datenaustausch) definiert.
+
+Meilenstein 2: Produktpräsentation und Verwaltungsfunktionen (Ende Sprint 2) 
+o	Produktkatalog samt Detailseiten implementiert.
+o	CRUD-Funktionalitäten im Admin-Bereich für Produkte stehen zur Verfügung.
+
+Meilenstein 3: Warenkorb, Kunden- und Bestellfunktionen (Ende Sprint 3) 
+o	Funktionierender Warenkorb und vollständiger Bestellprozess (inklusive Kundenregistrierung/-verwaltung).
+o	Integration der Sicherheitsmechanismen (Sessions, Cookies) abgeschlossen.
+
+Meilenstein 4: Endintegration, Admin-Bereich und Systemtests (Ende Sprint 4) 
+o	Gutscheinsystem und erweiterter Administrationsbereich vollständig integriert.
+o	Erfolgreiche Systemtests, Bugfixing und Deploymentvorbereitung abgeschlossen.
+
+ Zeitplan (bei 1 Tag pro Sprint):
+•	Sprint 1: 20.03-03.04
+•	Sprint 2: 03.04-28.04
+•	Sprint 3: 28.04-19.05
+•	Sprint 4: 19.05-??.??
