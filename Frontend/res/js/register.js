@@ -5,7 +5,7 @@ document.getElementById('registerForm').addEventListener('submit', function(even
         alert('Passwords do not match');
         return;
     }
-    fetch('../logic/userHandler.php', {
+    fetch('/Backend/logic/register.php', {
         method: 'POST',
         body: formData
     })

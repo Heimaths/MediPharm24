@@ -1,6 +1,6 @@
 <?php
 // register.php
-include 'db.php'; // Include database connection
+include 'dbaccess.php'; // Include database connection
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);
