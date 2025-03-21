@@ -1,11 +1,13 @@
-document.getElementById('registerForm').addEventListener('submit', function(event) {
+document.getElementById('registrationForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    const formData = new FormData(this);
-    if (formData.get('password') !== formData.get('confirm_password')) {
+    let formData = new FormData(this);
+
+
+    if (formData.get("password") !== formData.get("confirmPassword")) {
         alert('Passwords do not match');
         return;
     }
-    fetch('/Backend/logic/register.php', {
+    fetch('register.php', {
         method: 'POST',
         body: formData
     })

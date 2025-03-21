@@ -3,7 +3,7 @@ class Database {
     private $host = "localhost";
     private $dbname = "webshop_db";
     private $username = "root";
-    private $password = "root";
+    private $password = "";
     private $conn;
 
     public function connect() {
