@@ -1,22 +1,6 @@
 <?php
-    $servername = "localhost";
-    $dbname = "webshop_db";
-    $username = "root";
-    $password = "";
-    $conn;
-
-// Verbindung herstellen
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verbindung überprüfen
-if ($conn->connect_error) {
-    die("Verbindung fehlgeschlagen: " . $conn->connect_error);
-}
-
-
-// register.php
-
-header("Content-Type: application/json"); // JSON-Antwort sicherstellen
+   
+require('../config/dbaccess.php');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);

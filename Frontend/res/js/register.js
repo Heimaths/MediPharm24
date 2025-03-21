@@ -7,7 +7,7 @@ document.getElementById('registrationForm').addEventListener('submit', function(
         alert('Passwords do not match');
         return;
     }
-    fetch('register.php', {
+    fetch('/Webscripting-Webproject/Backend/logic/register.php', {
         method: 'POST',
         body: formData
     })
