@@ -1,5 +1,5 @@
 <?php
-include "dataHandler.php";
+require '../config/dataHandler.php';
 $handler = new DataHandler();
 $action = $_GET['action'] ?? '';
 

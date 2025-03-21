@@ -1,15 +1,19 @@
 <?php
- $servername = "localhost";
- $dbname = "webshop_db";
- $username = "root";
- $password = "";
- $conn;
+class Database {
+    private $host = "localhost";
+    private $dbname = "webshop_db";
+    private $username = "root";
+    private $password = "";
 
-// Verbindung herstellen
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Verbindung überprüfen
-if ($conn->connect_error) {
- die("Verbindung fehlgeschlagen: " . $conn->connect_error);
+    public function connect() {
+        try {
+            $conn = new PDO("mysql:host=".$this->host.";dbname=".$this->dbname, $this->username, $this->password);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $conn->exec("set names utf8");
+            return $conn;
+        } catch(PDOException $e) {
+            die("Connection error: " . $e->getMessage());
+        }
+    }
 }
 ?>
