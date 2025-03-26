@@ -4,7 +4,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     const formData = new FormData(this);
     formData.append('action', 'login');  // 👈 Aktion explizit setzen!
 
-    fetch('/Webscripting-Webproject/Backend/logic/userHandler.php', {
+    fetch('/Backend/logic/userHandler.php', {
         method: 'POST',
         body: formData  // Ändere `body` direkt auf `formData`
     })
