@@ -4,7 +4,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     const formData = new FormData(this);
     formData.append('action', 'login');  // 👈 Aktion explizit setzen!
 
-    fetch('../..Backend/logic/userHandler.php', {
+    fetch('../../Backend/logic/userHandler.php', {
         method: 'POST',
         body: formData  // Ändere `body` direkt auf `formData`
     })
@@ -13,7 +13,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         console.log('Server-Antwort:', data);
         if (data.status === 'success') {
             alert(data.message);
-            window.location.href = 'index.html';
+            window.location.href = '../index.html';
         } else {
             alert('Fehler: ' + data.message);
         }
