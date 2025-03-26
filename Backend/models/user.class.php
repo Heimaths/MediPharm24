@@ -49,24 +49,23 @@ class User {
         $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':payment_info', $this->payment_info);
-        $stmt->bindParam(':is_admin', $this->is_admin);
+        $stmt->bindParam(':is_admin', $this->is_admin, PDO::PARAM_BOOL);
 
-        if ($stmt->execute()) {
-            return true;
-        }
-        return false;
+        return $stmt->execute();
     }
 
     public function login() {
-        // SQL‑Query: Hole den Benutzer anhand des Benutzernamens
-        $query = "SELECT * FROM " . $this->table . " WHERE username = :username LIMIT 1";
+        // SQL-Query: Prüfe, ob die Eingabe eine E-Mail-Adresse oder ein Benutzername ist
+        $query = "SELECT * FROM " . $this->table . " WHERE username = :identifier OR email = :identifier LIMIT 1";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':username', $this->username);
+        
+        $stmt->bindParam(':identifier', $this->username); // Hier kann username oder email stehen
         $stmt->execute();
-
+        
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        // Prüfen, ob ein Benutzer gefunden wurde und das Passwort passt
+        
         if ($user && password_verify($this->password, $user['password'])) {
+            // Benutzerdaten setzen
             $this->id = $user['id'];
             $this->salutation = $user['salutation'];
             $this->first_name = $user['first_name'];
@@ -78,6 +77,7 @@ class User {
             $this->username = $user['username'];
             $this->payment_info = $user['payment_info'];
             $this->is_admin = $user['is_admin'];
+            
             return true;
         }
         return false;
