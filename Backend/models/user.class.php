@@ -49,7 +49,7 @@ class User {
         $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':payment_info', $this->payment_info);
-        $stmt->bindParam(':is_admin', $this->is_admin, PDO::PARAM_BOOL);
+        $stmt->bindParam(':is_admin', $this->is_admin);
 
         return $stmt->execute();
     }

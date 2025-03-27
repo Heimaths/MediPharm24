@@ -48,7 +48,7 @@ if ($action == 'register') {
         $_SESSION['user_id'] = $user->id;
         $_SESSION['username'] = $user->username;
         $_SESSION['email'] = $user->email;
-        $_SESSION['is_admin'] = $user->is_admin;
+        $_SESSION['is_admin'] = (bool) $user->is_admin;
 
         echo json_encode(['status' => 'success', 'message' => 'Login successful']);
     } else {

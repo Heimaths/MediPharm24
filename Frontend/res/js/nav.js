@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (data.logged_in) {
                 // User ist eingeloggt
-                if (data.is_admin) {
+                if (data.is_admin == true) { 
                     navBar.innerHTML = `
 
                             <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/index.html">Home</a></li>
@@ -25,11 +25,10 @@ document.addEventListener("DOMContentLoaded", function () {
                             <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/sites/cart.html">Warenkorb</a></li>
                             <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/sites/profile.html">Mein Konto</a></li>
                             <li class="nav-item"><a class="nav-link" href="/MediPharm24/Backend/logic/logout.php">Logout</a></li>
-   
-                        
                     `;
                 }
-            } else {
+            } 
+            else {
                 // Nicht eingeloggt
                 navBar.innerHTML = `
                     
