@@ -1,7 +1,7 @@
 <?php
 session_start();
 session_destroy();
-header('Location: Login.php');
+header('Location: /MediPharm24/Frontend/index.html');
 exit();
 ?>
 

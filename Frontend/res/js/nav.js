@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <li class="nav-item"><a class="nav-link" href="sites/cart.html">Warenkorb</a></li>
                             <li class="nav-item"><a class="nav-link" href="sites/imprint.html">Impressum</a></li>
                             <li class="nav-item"><a class="nav-link" href="sites/terms.html">AGB</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Backend/logic/logout.php">Logout</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/MediPharm24/Backend/logic/logout.php">Logout</a></li>
                         
                     `;
                 } else {
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <li class="nav-item"><a class="nav-link" href="sites/cart.html">Warenkorb</a></li>
                             <li class="nav-item"><a class="nav-link" href="sites/imprint.html">Impressum</a></li>
                             <li class="nav-item"><a class="nav-link" href="sites/terms.html">AGB</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/Backend/logic/logout.php">Logout</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/MediPharm24/Backend/logic/logout.php">Logout</a></li>
                         
                     `;
                 }
