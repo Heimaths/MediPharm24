@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include '../config/dbaccess.php';
+include '../config/dbaccess.php'; // dataccess layer überlegen
 include '../models/user.class.php';
 
 $database = new Database();
