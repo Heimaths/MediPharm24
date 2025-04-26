@@ -1,22 +1,78 @@
+/* Allgemeine Stile */
 body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
     background-color: #f8f9fa;
 }
+
+/* Produktkarten */
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Produktkarten-Spezifische Styles */
+.product-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.product-card:hover {
+    transform: scale(1.02);
+}
+
+/* Warenkorb-Symbol */
+.cart-icon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: white;
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+/* Text-Styles */
+.text-primary {
+    color: #007bff;
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+/* Abstände */
+.p-3 {
+    padding: 1rem;
+}
+
+/* Produktliste */
+#product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
 h1 {
     font-size: 2rem;
 }
-.card {
-    margin-bottom: 20px;
-}
-
-// script.js - Dynamische Produktanzeige
-fetch('../backend/requestHandler.php?action=getProducts')
-    .then(response => response.json())
-    .then(data => {
-        let productList = document.getElementById("product-list");
-        data.data.forEach(product => {
-            let div = document.createElement("div");
-            div.classList.add("card", "p-3");
-            div.innerHTML = `<h3>${product.name}</h3><p>${product.beschreibung}</p><p class='text-primary font-weight-bold'>${product.preis} EUR</p>`;
-            productList.appendChild(div);
-        });
-    });
