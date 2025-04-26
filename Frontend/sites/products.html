@@ -87,36 +87,35 @@
     }
 
     function loadProducts(categoryId) {
-        $.ajax({
-            url: `/MediPharm24/Backend/api/products.php?category=${categoryId}`,
-            method: 'GET',
-            success: function(products) {
-                const productGrid = $('#productGrid');
-                productGrid.empty();
-                products.forEach(product => {
-                    productGrid.append(`
-                        <div class="col-md-4 mb-4">
-                            <div class="card product-card" draggable="true" 
-                                 ondragstart="drag(event, ${product.id})">
-                                <img src="${product.image}" class="card-img-top" alt="${product.name}">
-                                <div class="card-body">
-                                    <h5 class="card-title">${product.name}</h5>
-                                    <p class="card-text">${product.price} €</p>
-                                    <p class="card-text">
-                                        <small class="text-muted">Bewertung: ${product.rating}/5</small>
-                                    </p>
-                                    <button class="btn btn-primary" onclick="addToCart(${product.id})">
-                                        In den Warenkorb
-                                    </button>
-                                </div>
+    $.ajax({
+        url: `/MediPharm24/Backend/api/products.php?category=${categoryId}`,
+        method: 'GET',
+        success: function(products) {
+            const productGrid = $('#productGrid');
+            productGrid.empty();
+            products.forEach(product => {
+                productGrid.append(`
+                    <div class="col-md-4 mb-4">
+                        <div class="card product-card" draggable="true" 
+                             ondragstart="drag(event, ${product.id})">
+                            <img src="${product.bild}" class="card-img-top" alt="${product.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${product.preis} €</p>
+                                <p class="card-text">
+                                    <small class="text-muted">Bewertung: ${product.rating}/5</small>
+                                </p>
+                                <button class="btn btn-primary" onclick="addToCart(${product.id})">
+                                    In den Warenkorb
+                                </button>
                             </div>
                         </div>
-                    `);
-                });
-            }
-        });
-    }
-
+                    </div>
+                `);
+            });
+        }
+    });
+}
     function drag(event, productId) {
         event.dataTransfer.setData('text/plain', productId);
     }

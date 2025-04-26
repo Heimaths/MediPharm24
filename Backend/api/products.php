@@ -1,29 +1,35 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-require_once '../config/database.php';
+require_once '../config/dbaccess.php';
+$database = new Database();
+$pdo = $database->connect();
 
 $categoryId = isset($_GET['category']) ? (int)$_GET['category'] : 0;
 
 try {
     if ($categoryId > 0) {
         $stmt = $pdo->prepare("
-            SELECT p.id, p.name, p.price, p.image, 
-                   COALESCE(AVG(r.rating), 0) as rating
-            FROM products p
-            LEFT JOIN reviews r ON p.id = r.product_id
-            WHERE p.category_id = ?
+            SELECT p.id, p.name, p.preis, p.bild, 
+                   COALESCE(AVG(b.rating), 0) as rating
+            FROM produkte p
+            LEFT JOIN bewertungen b ON p.id = b.produkt_id
+            WHERE p.kategorie_id = ?
             GROUP BY p.id
             ORDER BY p.name
         ");
         $stmt->execute([$categoryId]);
     } else {
         $stmt = $pdo->query("
-            SELECT p.id, p.name, p.price, p.image, 
-                   COALESCE(AVG(r.rating), 0) as rating
-            FROM products p
-            LEFT JOIN reviews r ON p.id = r.product_id
+            SELECT p.id, p.name, p.preis, p.bild, 
+                   COALESCE(AVG(b.rating), 0) as rating
+            FROM produkte p
+            LEFT JOIN bewertungen b ON p.id = b.produkt_id
             GROUP BY p.id
             ORDER BY p.name
         ");
@@ -33,7 +39,7 @@ try {
     
     // Bildpfade anpassen
     foreach ($products as &$product) {
-        $product['image'] = '/MediPharm24/Backend/uploads/' . $product['image'];
+        $product['bild'] = '/MediPharm24/Backend/uploads/' . $product['bild'];
     }
     
     echo json_encode($products);
