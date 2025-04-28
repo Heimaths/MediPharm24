@@ -54,5 +54,46 @@ if ($action == 'register') {
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Login failed']);
     }
+} elseif ($action == 'getProfile') {
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Nicht eingeloggt']);
+        exit();
+    }
+    $userId = $_SESSION['user_id'];
+    $stmt = $db->prepare("SELECT address, email, payment_info, postal_code, city FROM kunden WHERE id = ?");
+    $stmt->execute([$userId]);
+    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($userData) {
+        echo json_encode(['status' => 'success', 'user' => $userData]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Benutzer nicht gefunden']);
+    }
+    exit();
+} elseif ($action == 'updateProfile') {
+    if (!isset($_SESSION['user_id'])) {
+        echo json_encode(['status' => 'error', 'message' => 'Nicht eingeloggt']);
+        exit();
+    }
+    $userId = $_SESSION['user_id'];
+    $address = $_POST['address'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $payment_info = $_POST['payment_info'] ?? '';
+    $postal_code = $_POST['postal_code'] ?? '';
+    $city = $_POST['city'] ?? '';
+    $password = $_POST['password'] ?? '';
+    if (!empty($password)) {
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+        $stmt = $db->prepare("UPDATE kunden SET address=?, email=?, payment_info=?, postal_code=?, city=?, password=? WHERE id=?");
+        $success = $stmt->execute([$address, $email, $payment_info, $postal_code, $city, $passwordHash, $userId]);
+    } else {
+        $stmt = $db->prepare("UPDATE kunden SET address=?, email=?, payment_info=?, postal_code=?, city=? WHERE id=?");
+        $success = $stmt->execute([$address, $email, $payment_info, $postal_code, $city, $userId]);
+    }
+    if ($success) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Fehler beim Speichern']);
+    }
+    exit();
 }
 ?>

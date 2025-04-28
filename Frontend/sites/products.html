@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <title>Produkte - MediPharm24</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="../res/css/style.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/MediPharm24/Frontend/res/js/nav.js" defer></script>
-    <script src="/MediPharm24/Frontend/res/js/products.js" defer></script>
+    <script src="/MediPharm24/Frontend/res/js/product-display.js" defer></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -23,7 +24,7 @@
     </div>
 </nav>
 
-<div class="cart-icon" id="cartIcon" draggable="true">
+<div class="cart-icon" id="cartIcon" draggable="true" onclick="window.location.href='cart.html'">
     <i class="fas fa-shopping-cart fa-2x"></i>
     <span class="cart-count" id="cartCount">0</span>
 </div>
@@ -42,115 +43,5 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        // Warenkorb initialisieren
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        updateCartCount();
-
-        // Kategorien laden
-        loadCategories();
-
-        // Drag & Drop Event Handler
-        document.getElementById('cartIcon').addEventListener('dragover', function(e) {
-            e.preventDefault();
-        });
-
-        document.getElementById('cartIcon').addEventListener('drop', function(e) {
-            e.preventDefault();
-            const productId = e.dataTransfer.getData('text/plain');
-            addToCart(productId);
-        });
-    });
-
-    function loadCategories() {
-        $.ajax({
-            url: '/MediPharm24/Backend/api/categories.php',
-            method: 'GET',
-            success: function(categories) {
-                const categoryList = $('#categoryList');
-                categories.forEach((category, index) => {
-                    const activeClass = index === 0 ? 'active' : '';
-                    categoryList.append(`
-                        <a href="#" class="list-group-item list-group-item-action ${activeClass}" 
-                           onclick="loadProducts(${category.id})">
-                            ${category.name}
-                        </a>
-                    `);
-                });
-                if (categories.length > 0) {
-                    loadProducts(categories[0].id);
-                }
-            }
-        });
-    }
-
-    function loadProducts(categoryId) {
-    $.ajax({
-        url: `/MediPharm24/Backend/api/products.php?category=${categoryId}`,
-        method: 'GET',
-        success: function(products) {
-            const productGrid = $('#productGrid');
-            productGrid.empty();
-            products.forEach(product => {
-                productGrid.append(`
-                    <div class="col-md-4 mb-4">
-                        <div class="card product-card" draggable="true" 
-                             ondragstart="drag(event, ${product.id})">
-                            <img src="${product.bild}" class="card-img-top" alt="${product.name}">
-                            <div class="card-body">
-                                <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text">${product.preis} €</p>
-                                <p class="card-text">
-                                    <small class="text-muted">Bewertung: ${product.rating}/5</small>
-                                </p>
-                                <button class="btn btn-primary" onclick="addToCart(${product.id})">
-                                    In den Warenkorb
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `);
-            });
-        }
-    });
-}
-    function drag(event, productId) {
-        event.dataTransfer.setData('text/plain', productId);
-    }
-
-    function addToCart(productId) {
-        $.ajax({
-            url: '/MediPharm24/Backend/api/cart.php',
-            method: 'POST',
-            data: { action: 'add', productId: productId },
-            success: function(response) {
-                updateCartCount();
-                showNotification('Produkt wurde zum Warenkorb hinzugefügt');
-            }
-        });
-    }
-
-    function updateCartCount() {
-        $.ajax({
-            url: '/MediPharm24/Backend/api/cart.php',
-            method: 'GET',
-            success: function(response) {
-                $('#cartCount').text(response.count);
-            }
-        });
-    }
-
-    function showNotification(message) {
-        const notification = $(`
-            <div class="alert alert-success" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
-                ${message}
-            </div>
-        `);
-        $('body').append(notification);
-        setTimeout(() => notification.remove(), 3000);
-    }
-</script>
 </body>
 </html>

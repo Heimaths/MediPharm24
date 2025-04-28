@@ -44,55 +44,59 @@
     });
 
     function loadCart() {
-    $.ajax({
-        url: '/MediPharm24/Backend/api/cart.php',
-        method: 'GET',
-        success: function(response) {
-            const cartItems = $('#cartItems');
-            cartItems.empty();
+        $.ajax({
+            url: '/MediPharm24/Backend/api/cart.php',
+            method: 'GET',
+            success: function(response) {
+                const cartItems = $('#cartItems');
+                cartItems.empty();
 
-            if (response.items.length === 0) {
-                cartItems.html('<p>Ihr Warenkorb ist leer.</p>');
-                $('#totalAmount').text('0,00 €');
-                return;
-            }
+                if (response.items.length === 0) {
+                    cartItems.html('<p>Ihr Warenkorb ist leer.</p>');
+                    $('#totalAmount').text('0,00 €');
+                    return;
+                }
 
-            response.items.forEach(item => {
-                cartItems.append(`
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h5 class="card-title">${item.name}</h5>
-                                    <p class="card-text">${item.preis.toFixed(2)} €</p>
-                                </div>
-                                <div class="col-md-6 text-right">
-                                    <div class="input-group mb-3" style="max-width: 200px; margin-left: auto;">
-                                        <div class="input-group-prepend">
-                                            <button class="btn btn-outline-secondary" type="button" 
-                                                    onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
-                                        </div>
-                                        <input type="text" class="form-control text-center" 
-                                               value="${item.quantity}" readonly>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button" 
-                                                    onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
-                                        </div>
+                response.items.forEach(item => {
+                    cartItems.append(`
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5 class="card-title">${item.name}</h5>
+                                        <p class="card-text">${Number(item.price).toFixed(2)} €</p>
                                     </div>
-                                    <button class="btn btn-danger" onclick="removeFromCart(${item.id})">
-                                        Entfernen
-                                    </button>
+                                    <div class="col-md-6 text-right">
+                                        <div class="input-group mb-3" style="max-width: 200px; margin-left: auto;">
+                                            <div class="input-group-prepend">
+                                                <button class="btn btn-outline-secondary" type="button" 
+                                                        onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                                            </div>
+                                            <input type="text" class="form-control text-center" 
+                                                   value="${item.quantity}" readonly>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button" 
+                                                        onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-danger" onclick="removeFromCart(${item.id})">
+                                            Entfernen
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `);
-            });
+                    `);
+                });
 
-            $('#totalAmount').text(response.total.toFixed(2) + ' €');
-        }
-    });
-}
+                $('#totalAmount').text(response.total.toFixed(2) + ' €');
+            },
+            error: function(xhr, status, error) {
+                console.error('Fehler beim Laden des Warenkorbs:', error);
+                $('#cartItems').html('<p class="text-danger">Fehler beim Laden des Warenkorbs.</p>');
+            }
+        });
+    }
 
     function updateQuantity(productId, newQuantity) {
         if (newQuantity < 1) return;
@@ -100,13 +104,18 @@
         $.ajax({
             url: '/MediPharm24/Backend/api/cart.php',
             method: 'POST',
-            data: {
+            contentType: 'application/json',
+            data: JSON.stringify({
                 action: 'update',
                 productId: productId,
                 quantity: newQuantity
-            },
+            }),
             success: function() {
                 loadCart();
+            },
+            error: function(xhr, status, error) {
+                console.error('Fehler beim Aktualisieren der Menge:', error);
+                alert('Fehler beim Aktualisieren der Menge');
             }
         });
     }
@@ -115,19 +124,40 @@
         $.ajax({
             url: '/MediPharm24/Backend/api/cart.php',
             method: 'POST',
-            data: {
+            contentType: 'application/json',
+            data: JSON.stringify({
                 action: 'remove',
                 productId: productId
-            },
+            }),
             success: function() {
                 loadCart();
+            },
+            error: function(xhr, status, error) {
+                console.error('Fehler beim Entfernen des Produkts:', error);
+                alert('Fehler beim Entfernen des Produkts');
             }
         });
     }
 
     function checkout() {
-        // Hier könnte die Weiterleitung zur Kasse implementiert werden
-        alert('Kasse-Funktionalität wird noch implementiert');
+        fetch('/MediPharm24/Backend/api/order.php', {
+            method: 'POST',
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Bestellung erfolgreich angelegt! Bestellnummer: ' + data.order_id);
+                // Optional: Warenkorb leeren oder zur Bestellübersicht weiterleiten
+                location.reload();
+            } else {
+                alert('Fehler beim Anlegen der Bestellung: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Fehler beim Anlegen der Bestellung.');
+            console.error(error);
+        });
     }
 </script>
 </body>

@@ -5,6 +5,8 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
 
 require_once '../config/dbaccess.php';
 $database = new Database();
@@ -27,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $placeholders = str_repeat('?,', count($productIds) - 1) . '?';
         
         $stmt = $pdo->prepare("
-            SELECT id, name, price 
-            FROM products 
+            SELECT id, name, preis as price 
+            FROM produkte 
             WHERE id IN ($placeholders)
         ");
         $stmt->execute($productIds);
@@ -54,12 +56,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 } 
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
+    
+    if (!$data) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Ungültige Daten']);
+        exit;
+    }
+    
     $action = $data['action'] ?? '';
     $productId = (int)($data['productId'] ?? 0);
     
     if ($productId <= 0) {
         http_response_code(400);
         echo json_encode(['error' => 'Ungültige Produkt-ID']);
+        exit;
+    }
+    
+    // Überprüfen, ob das Produkt existiert
+    $stmt = $pdo->prepare("SELECT id FROM produkte WHERE id = ?");
+    $stmt->execute([$productId]);
+    if (!$stmt->fetch()) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Produkt nicht gefunden']);
         exit;
     }
     
@@ -89,6 +107,12 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
     }
     
-    echo json_encode(['success' => true, 'count' => array_sum($_SESSION['cart'])]);
+    // Aktualisierten Warenkorb zurückgeben
+    $cartCount = array_sum($_SESSION['cart']);
+    echo json_encode([
+        'success' => true, 
+        'count' => $cartCount,
+        'cart' => $_SESSION['cart']
+    ]);
 }
 ?> 
