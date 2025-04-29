@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-include '../config/dbaccess.php'; // dataccess layer überlegen
-include '../models/user.class.php';
+include '/Medipharm24/Backend/config/dbaccess.php'; // dataccess layer überlegen
+include '/Medipharm24/Backend/models/user.class.php';
 
 $database = new Database();
 $db = $database->connect();

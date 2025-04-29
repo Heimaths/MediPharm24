@@ -6,7 +6,7 @@ document.getElementById('registrationForm').addEventListener('submit', function 
     let formData = new FormData(this);
     formData.append('action', 'register');  // 👈 Aktion explizit setzen!
 
-    fetch('../../Backend/logic/userHandler.php', {
+    fetch('/MediPharm24/Backend/logic/userHandler.php', {
         method: 'POST',
         body: formData  // Ändere `body` direkt auf `formData`
     })
