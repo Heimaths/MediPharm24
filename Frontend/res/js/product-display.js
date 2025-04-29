@@ -52,12 +52,17 @@ $(document).on('click', '#categoryList a', function(e) {
 });
 
 function loadProducts(categoryId) {
+    const searchTerm = $('#searchInput').val();
     $.ajax({
-        url: `/MediPharm24/Backend/api/products.php?category=${categoryId}`,
+        url: `/MediPharm24/Backend/api/products.php?category=${categoryId}&search=${encodeURIComponent(searchTerm)}`,
         method: 'GET',
         success: function(products) {
             const productGrid = $('#productGrid');
             productGrid.empty();
+            if (products.length === 0) {
+                productGrid.html('<div class="col-12"><p class="text-center">Keine Produkte gefunden.</p></div>');
+                return;
+            }
             products.forEach(product => {
                 productGrid.append(`
                     <div class="col-md-4 mb-4">
@@ -148,4 +153,15 @@ function showNotification(message, type = 'success') {
     `);
     $('body').append(notification);
     setTimeout(() => notification.remove(), 3000);
-} 
+}
+
+// Suchfeld Event-Listener
+let searchTimeout;
+$('#searchInput').on('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const activeCategory = $('#categoryList a.active');
+        const categoryId = activeCategory.length ? activeCategory.data('category-id') : 0;
+        loadProducts(categoryId);
+    }, 300); // 300ms Verzögerung
+}); 
