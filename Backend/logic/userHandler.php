@@ -52,16 +52,34 @@ if ($action == 'register') {
 
         // Wenn "Login merken" aktiviert ist, Cookie setzen
         if (isset($_POST['remember_me']) && $_POST['remember_me'] == 'on') {
-            // Erstelle einen sicheren Token
-            $token = bin2hex(random_bytes(32));
-            $expires = time() + (30 * 24 * 60 * 60); // 30 Tage
+            // Erstelle einen sicheren Schlüssel für die Verschlüsselung
+            $key = bin2hex(random_bytes(32));
             
-            // Speichere den Token in der Datenbank
-            $stmt = $db->prepare("INSERT INTO remember_tokens (user_id, token, expires) VALUES (?, ?, ?)");
-            $stmt->execute([$user->id, $token, date('Y-m-d H:i:s', $expires)]);
+            // Erstelle die zu speichernden Daten
+            $data = [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'email' => $user->email,
+                'is_admin' => (bool) $user->is_admin,
+                'expires' => time() + (30 * 24 * 60 * 60) // 30 Tage
+            ];
+            
+            // Verschlüssele die Daten
+            $iv = openssl_random_pseudo_bytes(16);
+            $encrypted = openssl_encrypt(
+                json_encode($data),
+                'AES-256-CBC',
+                $key,
+                0,
+                $iv
+            );
+            
+            // Kombiniere IV und verschlüsselte Daten
+            $cookieData = base64_encode($iv . $encrypted);
             
             // Setze das Cookie
-            setcookie('remember_token', $token, $expires, '/', '', true, true);
+            setcookie('remember_data', $cookieData, $data['expires'], '/', '', true, true);
+            setcookie('remember_key', $key, $data['expires'], '/', '', true, true);
         }
 
         echo json_encode(['status' => 'success', 'message' => 'Login successful']);
