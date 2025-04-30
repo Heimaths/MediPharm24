@@ -166,6 +166,11 @@ $(document).ready(function() {
                             html += `
                                             </tbody>
                                         </table>
+                                        <div class="text-right">
+                                            <button class="btn btn-primary" onclick="window.location.href='/MediPharm24/Backend/api/generatePdf.php?order_id=${order.id}'">
+                                                Rechnung drucken
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>`;
