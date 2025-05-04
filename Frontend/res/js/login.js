@@ -12,10 +12,9 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     .then(data => {
         console.log('Server-Antwort:', data);
         if (data.status === 'success') {
-            alert(data.message);
             window.location.href = '../index.html';
         } else {
-            alert('Fehler: ' + data.message);
+            alert(data.message);
         }
     })
     .catch(error => {

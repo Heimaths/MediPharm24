@@ -23,6 +23,16 @@
 
 <div class="container mt-5">
     <h2>Kundenverwaltung</h2>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Suche nach Name, Email oder Benutzername...">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="searchUsers()">Suchen</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="userList"></div>
 </div>
 
@@ -83,6 +93,13 @@
             </select>
           </div>
           <div class="form-group">
+            <label for="edit_is_active">Status</label>
+            <select class="form-control" id="edit_is_active" name="is_active">
+              <option value="1">Aktiv</option>
+              <option value="0">Inaktiv</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label for="edit_password">Neues Passwort (optional)</label>
             <input type="password" class="form-control" id="edit_password" name="password">
           </div>
@@ -97,19 +114,27 @@
 </div>
 
 <script>
-function loadUsers() {
-    fetch('/MediPharm24/Backend/api/allUsers.php')
+function loadUsers(searchTerm = '') {
+    const url = searchTerm 
+        ? `/MediPharm24/Backend/api/allUsers.php?search=${encodeURIComponent(searchTerm)}`
+        : '/MediPharm24/Backend/api/allUsers.php';
+
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                let html = '<table class="table"><thead><tr><th>Name</th><th>Email</th><th>Benutzername</th><th>Admin</th><th>Aktion</th></tr></thead><tbody>';
+                let html = '<table class="table"><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Benutzername</th><th>Admin</th><th>Status</th><th>Aktion</th></tr></thead><tbody>';
                 data.users.forEach(user => {
                     html += `<tr>
+                        <td>${user.id}</td>
                         <td>${user.salutation} ${user.first_name} ${user.last_name}</td>
                         <td>${user.email}</td>
                         <td>${user.username}</td>
                         <td>${user.is_admin ? 'Ja' : 'Nein'}</td>
-                        <td><button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Bearbeiten</button></td>
+                        <td>${user.is_active ? '<span class="badge badge-success">Aktiv</span>' : '<span class="badge badge-danger">Inaktiv</span>'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Bearbeiten</button>
+                        </td>
                     </tr>`;
                 });
                 html += '</tbody></table>';
@@ -119,6 +144,24 @@ function loadUsers() {
             }
         });
 }
+
+function searchUsers() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    loadUsers(searchTerm);
+}
+
+// Event-Listener für Enter-Taste in der Suchleiste
+document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchUsers();
+    }
+});
+
+// Lade Benutzer beim Start
+document.addEventListener('DOMContentLoaded', function() {
+    loadUsers();
+});
+
 function editUser(userId) {
     // Userdaten laden
     fetch(`/MediPharm24/Backend/api/getUser.php?id=${userId}`)
@@ -136,6 +179,7 @@ function editUser(userId) {
                 $('#edit_city').val(user.city);
                 $('#edit_username').val(user.username);
                 $('#edit_is_admin').val(user.is_admin);
+                $('#edit_is_active').val(user.is_active);
                 $('#edit_password').val('');
                 $('#editUserModal').modal('show');
             } else {
@@ -155,13 +199,16 @@ $('#saveUserBtn').on('click', function() {
         if (data.status === 'success') {
             $('#editUserModal').modal('hide');
             loadUsers();
+            alert(data.message);
         } else {
             alert('Fehler beim Speichern: ' + data.message);
         }
+    })
+    .catch(error => {
+        console.error('Fehler bei der Anfrage:', error);
+        alert('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
     });
 });
-
-document.addEventListener('DOMContentLoaded', loadUsers);
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -34,17 +34,15 @@ if ($action == 'register') {
     $user->payment_info = $_POST['payment_info'] ?? null;
     $user->is_admin = false;
 
-    if ($user->register()) {
-        echo json_encode(['status' => 'success', 'message' => 'User registered successfully']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'User registration failed']);
-    }
+    $result = $user->register();
+    echo json_encode($result);
 } elseif ($action == 'login') {
     // Login: Hier werden nur Benutzername oder E-Mail und password übergeben
     $user->username = $_POST['identifier'] ?? '';  // FIX: richtiger Variablenname
     $user->password = $_POST['password'] ?? '';
 
-    if ($user->login()) {
+    $loginResult = $user->login();
+    if ($loginResult['success']) {
         $_SESSION['user_id'] = $user->id;
         $_SESSION['username'] = $user->username;
         $_SESSION['email'] = $user->email;
@@ -84,7 +82,7 @@ if ($action == 'register') {
 
         echo json_encode(['status' => 'success', 'message' => 'Login successful']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Login failed']);
+        echo json_encode(['status' => 'error', 'message' => $loginResult['message']]);
     }
 } elseif ($action == 'getProfile') {
     if (!isset($_SESSION['user_id'])) {

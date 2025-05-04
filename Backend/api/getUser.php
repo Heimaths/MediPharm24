@@ -17,7 +17,7 @@ if ($id <= 0) {
 $database = new Database();
 $db = $database->connect();
 
-$stmt = $db->prepare("SELECT id, salutation, first_name, last_name, email, address, postal_code, city, username, is_admin FROM kunden WHERE id = ?");
+$stmt = $db->prepare("SELECT id, salutation, first_name, last_name, email, address, postal_code, city, username, is_admin, is_active FROM kunden WHERE id = ?");
 $stmt->execute([$id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
