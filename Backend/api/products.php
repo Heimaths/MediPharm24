@@ -18,7 +18,7 @@ try {
         if (!empty($searchTerm)) {
             $stmt = $pdo->prepare("
                 SELECT p.id, p.name, p.preis, p.bild, 
-                       COALESCE(AVG(b.rating), 0) as rating
+                    ROUND(COALESCE(AVG(b.rating), 0), 2) as rating
                 FROM produkte p
                 LEFT JOIN bewertungen b ON p.id = b.produkt_id
                 WHERE p.kategorie_id = ? AND p.name LIKE ?
@@ -29,7 +29,7 @@ try {
         } else {
             $stmt = $pdo->prepare("
                 SELECT p.id, p.name, p.preis, p.bild, 
-                       COALESCE(AVG(b.rating), 0) as rating
+                    ROUND(COALESCE(AVG(b.rating), 0), 2) as rating
                 FROM produkte p
                 LEFT JOIN bewertungen b ON p.id = b.produkt_id
                 WHERE p.kategorie_id = ?
@@ -42,7 +42,7 @@ try {
         if (!empty($searchTerm)) {
             $stmt = $pdo->prepare("
                 SELECT p.id, p.name, p.preis, p.bild, 
-                       COALESCE(AVG(b.rating), 0) as rating
+                    ROUND(COALESCE(AVG(b.rating), 0), 2) as rating
                 FROM produkte p
                 LEFT JOIN bewertungen b ON p.id = b.produkt_id
                 WHERE p.name LIKE ?
@@ -53,7 +53,7 @@ try {
         } else {
             $stmt = $pdo->query("
                 SELECT p.id, p.name, p.preis, p.bild, 
-                       COALESCE(AVG(b.rating), 0) as rating
+                ROUND(COALESCE(AVG(b.rating), 0), 2) as rating
                 FROM produkte p
                 LEFT JOIN bewertungen b ON p.id = b.produkt_id
                 GROUP BY p.id
