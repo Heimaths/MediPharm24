@@ -5,7 +5,11 @@
     <title>Gutscheinverwaltung</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../res/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="/MediPharm24/Frontend/res/js/nav.js" defer></script>
+        <script src="/MediPharm24/Frontend/res/js/gutscheine.js" defer></script>
+
+
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -18,14 +22,42 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav"></ul>
     </div>
-</nav>
+</nav>  
 
 <div class="container mt-5">
-    <h2>Gutscheinverwaltung</h2>
-    <!-- Impressum content goes here -->
+    <h2>Gutscheine verwalten</h2>
+
+    <!-- Formular zum Erstellen eines neuen Gutscheins -->
+    <form id="create-coupon-form" class="form-inline mb-4" method="post">
+        <div class="form-group mr-2">
+            <label for="rabatt" class="mr-2">Wert (EUR):</label>
+            <input type="number" step="0.01" class="form-control" id="rabatt" name="rabatt" required>
+        </div>
+        <div class="form-group mr-2">
+            <label for="gueltig_bis" class="mr-2">Gültig bis:</label>
+            <input type="date" class="form-control" id="gueltig_bis" name="gueltig_bis" required>
+        </div>
+        <button type="submit" class="btn btn-success">Gutschein erstellen</button>
+    </form>
+
+    <!-- Übersicht aller Gutscheine -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Code</th>
+                <th>Wert</th>
+                <th>Gültig bis</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="coupon-table-body">
+            <!-- Wird per JS befüllt -->
+        </tbody>
+    </table>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- das ausgelagerte Skript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
