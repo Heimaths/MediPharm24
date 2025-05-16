@@ -64,20 +64,38 @@ function loadProducts(categoryId) {
                 return;
             }
             products.forEach(product => {
+                const imagePath = product.bild || '../res/img/no-image.jpg';
+                const rating = parseFloat(product.rating) || 0;
+                const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+                
                 productGrid.append(`
                     <div class="col-md-4 mb-4">
-                        <div class="card product-card" draggable="true" 
+                        <div class="card product-card h-100" draggable="true" 
                              ondragstart="drag(event, ${product.id})">
-                            <img src="${product.bild}" class="card-img-top" alt="${product.name}">
-                            <div class="card-body">
+                            <div class="card-img-container" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                <img src="${imagePath}" 
+                                     class="card-img-top" 
+                                     alt="${product.name}"
+                                     style="max-height: 100%; max-width: 100%; object-fit: contain;"
+                                     onerror="this.src='../res/img/no-image.jpg'">
+                            </div>
+                            <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text">${product.preis} €</p>
-                                <p class="card-text">
-                                    <small class="text-muted">Bewertung: ${product.rating}/5</small>
+                                <p class="card-text flex-grow-1">
+                                    ${product.beschreibung ? product.beschreibung.substring(0, 100) + (product.beschreibung.length > 100 ? '...' : '') : ''}
                                 </p>
-                                <button class="btn btn-primary" onclick="addToCart(${product.id})">
-                                    In den Warenkorb
-                                </button>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <p class="card-text font-weight-bold mb-0">${parseFloat(product.preis).toFixed(2)} €</p>
+                                        <div class="text-warning" title="${rating.toFixed(1)} von 5 Sternen">
+                                            ${stars}
+                                            <small class="text-muted ml-1">(${rating.toFixed(1)})</small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-block" onclick="addToCart(${product.id})">
+                                        <i class="fas fa-cart-plus"></i> In den Warenkorb
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

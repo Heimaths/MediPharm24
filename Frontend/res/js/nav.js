@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     navBar.innerHTML = `
 
                             <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/index.html">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/sites/products.html">Produkte bearbeiten</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/sites/products.html">Produkte</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/sites/modifyProducts.html">Produkte bearbeiten</a></li>
                             <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/sites/users.html">Kunden bearbeiten</a></li>
                             <li class="nav-item"><a class="nav-link" href="/MediPharm24/frontend/sites/vouchers.html">Gutscheinverwaltung</a></li>
                             <li class="nav-item"><a class="nav-link" href="/MediPharm24/Backend/logic/logout.php">Logout</a></li>

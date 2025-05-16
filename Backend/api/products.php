@@ -17,7 +17,7 @@ try {
     if ($categoryId > 0) {
         if (!empty($searchTerm)) {
             $stmt = $pdo->prepare("
-                SELECT p.id, p.name, p.preis, p.bild, 
+                SELECT p.id, p.name, p.preis, p.bild, p.beschreibung,
                     ROUND(COALESCE(AVG(b.rating), 0), 2) as rating
                 FROM produkte p
                 LEFT JOIN bewertungen b ON p.id = b.produkt_id
@@ -28,7 +28,7 @@ try {
             $stmt->execute([$categoryId, "%$searchTerm%"]);
         } else {
             $stmt = $pdo->prepare("
-                SELECT p.id, p.name, p.preis, p.bild, 
+                SELECT p.id, p.name, p.preis, p.bild, p.beschreibung,
                     ROUND(COALESCE(AVG(b.rating), 0), 2) as rating
                 FROM produkte p
                 LEFT JOIN bewertungen b ON p.id = b.produkt_id
@@ -41,7 +41,7 @@ try {
     } else {
         if (!empty($searchTerm)) {
             $stmt = $pdo->prepare("
-                SELECT p.id, p.name, p.preis, p.bild, 
+                SELECT p.id, p.name, p.preis, p.bild, p.beschreibung,
                     ROUND(COALESCE(AVG(b.rating), 0), 2) as rating
                 FROM produkte p
                 LEFT JOIN bewertungen b ON p.id = b.produkt_id
@@ -52,7 +52,7 @@ try {
             $stmt->execute(["%$searchTerm%"]);
         } else {
             $stmt = $pdo->query("
-                SELECT p.id, p.name, p.preis, p.bild, 
+                SELECT p.id, p.name, p.preis, p.bild, p.beschreibung,
                 ROUND(COALESCE(AVG(b.rating), 0), 2) as rating
                 FROM produkte p
                 LEFT JOIN bewertungen b ON p.id = b.produkt_id
@@ -66,7 +66,9 @@ try {
     
     // Bildpfade anpassen
     foreach ($products as &$product) {
-        $product['bild'] = '/MediPharm24/Backend/uploads/' . $product['bild'];
+        if ($product['bild']) {
+            $product['bild'] = '/MediPharm24/Frontend/res/img/products/' . basename($product['bild']);
+        }
     }
     
     echo json_encode($products);
