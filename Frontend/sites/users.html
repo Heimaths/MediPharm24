@@ -332,6 +332,7 @@ function showUserOrders(userId, userName) {
                         html += `
                                         </tbody>
                                     </table>
+                                    ${order.gutschein_code ? `<div class='mb-2'><span class='badge badge-info'>Gutschein verwendet: ${order.gutschein_code} (Rabatt: -${Number(order.gutschein_rabatt).toFixed(2)} €)</span></div>` : ''}
                                     <form class="order-edit-form" data-order-id="${order.id}">
                                         <div class="form-row align-items-center">
                                             <div class="col-auto">
@@ -411,6 +412,12 @@ function showOrderDetails(orderId) {
                     </tr>`;
                 });
                 document.getElementById('orderItemsList').innerHTML = itemsHtml;
+
+                let gutscheinHtml = '';
+                if (order.gutschein_code) {
+                    gutscheinHtml = `<div class='mb-2'><span class='badge badge-info'>Gutschein verwendet: ${order.gutschein_code} (Rabatt: -${Number(order.gutschein_rabatt).toFixed(2)} €)</span></div>`;
+                }
+                document.getElementById('orderItemsList').insertAdjacentHTML('afterend', gutscheinHtml);
             } else {
                 alert('Fehler beim Laden der Bestelldetails.');
             }

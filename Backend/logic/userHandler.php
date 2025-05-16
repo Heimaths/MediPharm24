@@ -33,6 +33,7 @@ if ($action == 'register') {
     $user->password = $_POST['password'] ?? null;
     $user->payment_info = $_POST['payment_info'] ?? null;
     $user->is_admin = false;
+    $user->is_active = true; // neue User standardmäßig aktiv und keine Admins
 
     $result = $user->register();
     echo json_encode($result);

@@ -207,6 +207,7 @@ function loadOrders() {
                         html += `
                                         </tbody>
                                     </table>
+                                    ${order.gutschein_code ? `<div class='mb-2'><span class='badge badge-info'>Gutschein verwendet: ${order.gutschein_code} (Rabatt: -${Number(order.gutschein_rabatt).toFixed(2)} €)</span></div>` : ''}
                                     <div class="text-right">
                                         ${order.status === 'bezahlt' || order.status === 'versendet' ? `<button class="btn btn-primary" onclick="window.open('/MediPharm24/Backend/api/generatePdf.php?order_id=${order.id}', '_blank')">Rechnung drucken</button>` : ''}
                                     </div>

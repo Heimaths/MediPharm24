@@ -32,6 +32,11 @@
             <a href="products.html" class="btn btn-secondary">Weiter einkaufen</a>
         </div>
         <div class="col-md-6 text-right">
+            <div id="couponSection" class="mb-2">
+                <input type="text" id="couponCode" class="form-control d-inline-block w-auto" placeholder="Gutscheincode" style="width: 200px; display: inline-block;">
+                <button class="btn btn-outline-success" id="applyCouponBtn">Gutschein einlösen</button>
+                <div id="couponFeedback" class="mt-2"></div>
+            </div>
             <h4>Gesamtbetrag: <span id="totalAmount">0,00 €</span></h4>
             <button class="btn btn-primary" onclick="checkout()">Bestellung abschließen</button>
         </div>
@@ -42,6 +47,49 @@
     $(document).ready(function() {
         loadCart();
     });
+
+    let appliedCoupon = null;
+    let rabattWert = 0;
+
+    $(document).on('click', '#applyCouponBtn', function() {
+        const code = $('#couponCode').val().trim();
+        if (!code) return;
+        if (appliedCoupon) return;
+        $.ajax({
+            url: '/MediPharm24/Backend/api/validateCoupon.php',
+            method: 'POST',
+            data: { code },
+            success: function(response) {
+                if (response.status === 'success') {
+                    appliedCoupon = response.code;
+                    rabattWert = parseFloat(response.rabatt);
+                    $('#couponFeedback').html(`<span class='text-success'>Gutschein akzeptiert: -${rabattWert.toFixed(2)} €</span>`);
+                    $('#couponCode').prop('disabled', true);
+                    $('#applyCouponBtn').prop('disabled', true);
+                    updateTotalWithCoupon();
+                } else {
+                    $('#couponFeedback').html(`<span class='text-danger'>${response.message}</span>`);
+                }
+            },
+            error: function() {
+                $('#couponFeedback').html('<span class="text-danger">Fehler bei der Gutscheinprüfung.</span>');
+            }
+        });
+    });
+
+    function updateTotalWithCoupon() {
+        let total = 0;
+        $('#cartItems .card').each(function() {
+            const priceText = $(this).find('.card-text').text().replace('€','').replace(',','.');
+            const price = parseFloat(priceText);
+            const quantity = parseInt($(this).find('input[type="text"]').val());
+            total += price * quantity;
+        });
+        if (rabattWert > 0) {
+            total = Math.max(0, total - rabattWert);
+        }
+        $('#totalAmount').text(total.toFixed(2) + ' €');
+    }
 
     function loadCart() {
         $.ajax({
@@ -89,7 +137,7 @@
                     `);
                 });
 
-                $('#totalAmount').text(response.total.toFixed(2) + ' €');
+                updateTotalWithCoupon();
             },
             error: function(xhr, status, error) {
                 console.error('Fehler beim Laden des Warenkorbs:', error);
@@ -140,9 +188,12 @@
     }
 
     function checkout() {
+        const coupon = appliedCoupon ? appliedCoupon : null;
         fetch('/MediPharm24/Backend/api/order.php', {
             method: 'POST',
-            credentials: 'include'
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ coupon: coupon })
         })
         .then(response => response.json())
         .then(data => {

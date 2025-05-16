@@ -28,8 +28,9 @@ try {
 
     // Bestellungen des Benutzers abrufen
     $stmt = $pdo->prepare("
-        SELECT o.id, o.datum, o.status
+        SELECT o.id, o.datum, o.status, o.gutschein_id, g.code as gutschein_code, g.rabatt as gutschein_rabatt
         FROM bestellungen o
+        LEFT JOIN gutscheine g ON o.gutschein_id = g.id
         WHERE o.kunde_id = ?
         ORDER BY o.datum DESC
     ");

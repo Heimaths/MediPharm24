@@ -70,7 +70,7 @@ class User {
             password = :password, 
             payment_info = :payment_info, 
             is_admin = :is_admin,
-            is_active = 1";  // Neue Benutzer sind standardmäßig aktiv
+            is_active = :is_active";  // Neue Benutzer sind standardmäßig aktiv
 
         $stmt = $this->conn->prepare($query);
 
@@ -88,6 +88,7 @@ class User {
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':payment_info', $this->payment_info);
         $stmt->bindParam(':is_admin', $this->is_admin);
+        $stmt->bindParam(':is_active', $this->is_active);
 
         if ($stmt->execute()) {
             return ['success' => true, 'message' => 'Registrierung erfolgreich'];
