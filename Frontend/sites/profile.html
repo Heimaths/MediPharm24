@@ -208,9 +208,7 @@ function loadOrders() {
                                         </tbody>
                                     </table>
                                     <div class="text-right">
-                                        <button class="btn btn-primary" onclick="window.location.href='/MediPharm24/Backend/api/generatePdf.php?order_id=${order.id}'">
-                                            Rechnung drucken
-                                        </button>
+                                        ${order.status === 'bezahlt' || order.status === 'versendet' ? `<button class="btn btn-primary" onclick="window.open('/MediPharm24/Backend/api/generatePdf.php?order_id=${order.id}', '_blank')">Rechnung drucken</button>` : ''}
                                     </div>
                                 </div>
                             </div>

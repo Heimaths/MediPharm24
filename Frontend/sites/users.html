@@ -113,6 +113,78 @@
   </div>
 </div>
 
+<!-- Modal für Bestellungsübersicht -->
+<div class="modal fade" id="ordersModal" tabindex="-1" role="dialog" aria-labelledby="ordersModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ordersModalLabel">Bestellungen von <span id="orderUserName"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="ordersList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal für Bestellungsdetails -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="orderDetailsModalLabel">Bestelldetails</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="orderDetailsForm">
+          <input type="hidden" id="orderId" name="order_id">
+          <div class="form-group">
+            <label for="orderStatus">Status</label>
+            <select class="form-control" id="orderStatus" name="status">
+              <option value="offen">Offen</option>
+              <option value="bestätigt">Bestätigt</option>
+              <option value="bezahlt">Bezahlt</option>
+              <option value="versendet">Versendet</option>
+              <option value="storniert">Storniert</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="orderTracking">Tracking-Nummer</label>
+            <input type="text" class="form-control" id="orderTracking" name="tracking_number">
+          </div>
+          <div class="form-group">
+            <label for="orderNotes">Notizen</label>
+            <textarea class="form-control" id="orderNotes" name="notes" rows="3"></textarea>
+          </div>
+          <div id="orderItems" class="mt-4">
+            <h6>Bestellte Artikel</h6>
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Artikel</th>
+                  <th>Menge</th>
+                  <th>Preis</th>
+                  <th>Gesamt</th>
+                </tr>
+              </thead>
+              <tbody id="orderItemsList"></tbody>
+            </table>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+        <button type="button" class="btn btn-primary" onclick="saveOrderDetails()">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 function loadUsers(searchTerm = '') {
     const url = searchTerm 
@@ -133,7 +205,8 @@ function loadUsers(searchTerm = '') {
                         <td>${user.is_admin ? 'Ja' : 'Nein'}</td>
                         <td>${user.is_active ? '<span class="badge badge-success">Aktiv</span>' : '<span class="badge badge-danger">Inaktiv</span>'}</td>
                         <td>
-                            <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})">Bearbeiten</button>
+                            <button class="btn btn-sm btn-primary mr-2" onclick="editUser(${user.id})">Bearbeiten</button>
+                            <button class="btn btn-sm btn-info" onclick="showUserOrders(${user.id}, '${user.first_name} ${user.last_name}')">Bestellungen</button>
                         </td>
                     </tr>`;
                 });
@@ -207,6 +280,195 @@ $('#saveUserBtn').on('click', function() {
     .catch(error => {
         console.error('Fehler bei der Anfrage:', error);
         alert('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+    });
+});
+
+function showUserOrders(userId, userName) {
+    document.getElementById('orderUserName').textContent = userName;
+    $('#ordersModal').modal('show');
+    
+    // Bestellungen des Users laden
+    fetch(`/MediPharm24/Backend/api/userOrders.php?user_id=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const orders = data.orders;
+                let html = '';
+                if (orders.length === 0) {
+                    html = '<p>Keine Bestellungen vorhanden.</p>';
+                } else {
+                    html = '<div class="accordion" id="ordersAccordion">';
+                    orders.forEach((order, idx) => {
+                        html += `
+                        <div class="card">
+                            <div class="card-header" id="heading${idx}">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${idx}" aria-expanded="true" aria-controls="collapse${idx}">
+                                        Bestellung #${order.id} vom ${order.datum} (${getStatusBadge(order.status)})
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapse${idx}" class="collapse" aria-labelledby="heading${idx}" data-parent="#ordersAccordion">
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Produkt</th>
+                                                <th>Menge</th>
+                                                <th>Einzelpreis</th>
+                                                <th>Gesamt</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+                        order.produkte.forEach(prod => {
+                            html += `
+                                            <tr>
+                                                <td>${prod.name}</td>
+                                                <td>${prod.menge}</td>
+                                                <td>${Number(prod.einzelpreis).toFixed(2)} €</td>
+                                                <td>${(prod.menge * prod.einzelpreis).toFixed(2)} €</td>
+                                            </tr>`;
+                        });
+                        html += `
+                                        </tbody>
+                                    </table>
+                                    <form class="order-edit-form" data-order-id="${order.id}">
+                                        <div class="form-row align-items-center">
+                                            <div class="col-auto">
+                                                <label for="status-select-${order.id}" class="sr-only">Status</label>
+                                                <select class="form-control mb-2" id="status-select-${order.id}" name="status">
+                                                    <option value="offen" ${order.status === 'offen' ? 'selected' : ''}>Offen</option>
+                                                    <option value="bestätigt" ${order.status === 'bestätigt' ? 'selected' : ''}>Bestätigt</option>
+                                                    <option value="bezahlt" ${order.status === 'bezahlt' ? 'selected' : ''}>Bezahlt</option>
+                                                    <option value="versendet" ${order.status === 'versendet' ? 'selected' : ''}>Versendet</option>
+                                                    <option value="storniert" ${order.status === 'storniert' ? 'selected' : ''}>Storniert</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <button type="submit" class="btn btn-success mb-2">Speichern</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="text-right">
+                                        <a class="btn btn-primary" href="/MediPharm24/Backend/api/generatePdf.php?order_id=${order.id}" target="_blank">
+                                            Rechnung drucken
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    html += '</div>';
+                }
+                document.getElementById('ordersList').innerHTML = html;
+            } else {
+                document.getElementById('ordersList').innerHTML = '<p class="text-danger">Fehler beim Laden der Bestellungen.</p>';
+            }
+        });
+}
+
+function getStatusBadge(status) {
+    const badges = {
+        'offen': 'badge-secondary',
+        'bestätigt': 'badge-primary',
+        'bezahlt': 'badge-info',
+        'versendet': 'badge-success',
+        'storniert': 'badge-danger'
+    };
+    const labels = {
+        'offen': 'Offen',
+        'bestätigt': 'Bestätigt',
+        'bezahlt': 'Bezahlt',
+        'versendet': 'Versendet',
+        'storniert': 'Storniert'
+    };
+    return `<span class="badge ${badges[status] || 'badge-secondary'}">${labels[status] || status}</span>`;
+}
+
+function showOrderDetails(orderId) {
+    $('#ordersModal').modal('hide');
+    $('#orderDetailsModal').modal('show');
+    
+    // Bestelldetails laden
+    fetch(`/MediPharm24/Backend/api/orderDetails.php?id=${orderId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const order = data.order;
+                $('#orderId').val(order.id);
+                $('#orderStatus').val(order.status);
+                $('#orderTracking').val(order.tracking_number || '');
+                $('#orderNotes').val(order.notes || '');
+                
+                // Bestellte Artikel anzeigen
+                let itemsHtml = '';
+                order.items.forEach(item => {
+                    itemsHtml += `<tr>
+                        <td>${item.product_name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${parseFloat(item.price).toFixed(2)} €</td>
+                        <td>${(item.quantity * parseFloat(item.price)).toFixed(2)} €</td>
+                    </tr>`;
+                });
+                document.getElementById('orderItemsList').innerHTML = itemsHtml;
+            } else {
+                alert('Fehler beim Laden der Bestelldetails.');
+            }
+        });
+}
+
+function saveOrderDetails() {
+    const formData = new FormData(document.getElementById('orderDetailsForm'));
+    fetch('/MediPharm24/Backend/api/updateOrder.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            $('#orderDetailsModal').modal('hide');
+            // Bestellungsliste aktualisieren
+            const userId = new URLSearchParams(window.location.search).get('user_id');
+            if (userId) {
+                showUserOrders(userId);
+            }
+            alert('Bestellung wurde aktualisiert.');
+        } else {
+            alert('Fehler beim Speichern: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Fehler bei der Anfrage:', error);
+        alert('Ein unerwarteter Fehler ist aufgetreten.');
+    });
+}
+
+// Event-Delegation für das Bearbeiten-Formular
+$(document).on('submit', '.order-edit-form', function(e) {
+    e.preventDefault();
+    const orderId = $(this).data('order-id');
+    const status = $(this).find('select[name="status"]').val();
+    const formData = new FormData();
+    formData.append('order_id', orderId);
+    formData.append('status', status);
+    fetch('/MediPharm24/Backend/api/updateOrder.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Bestellung aktualisiert!');
+            // Optional: Accordion neu laden
+            const userId = $('#orderUserName').data('user-id');
+            if (userId) showUserOrders(userId, $('#orderUserName').text());
+        } else {
+            alert('Fehler beim Speichern: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Fehler beim Speichern.');
+        console.error(error);
     });
 });
 

@@ -21,9 +21,16 @@ $database = new Database();
 $db = $database->connect();
 
 try {
-    // Überprüfen, ob die Bestellung dem Benutzer gehört
-    $stmt = $db->prepare("SELECT * FROM bestellungen WHERE id = ? AND kunde_id = ?");
-    $stmt->execute([$order_id, $_SESSION['user_id']]);
+    // Überprüfen, ob die Bestellung dem Benutzer gehört oder ob der User Admin ist
+    if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1) {
+        // Admin: Bestellung unabhängig vom Kunden laden
+        $stmt = $db->prepare("SELECT * FROM bestellungen WHERE id = ?");
+        $stmt->execute([$order_id]);
+    } else {
+        // Normaler User: Nur eigene Bestellung
+        $stmt = $db->prepare("SELECT * FROM bestellungen WHERE id = ? AND kunde_id = ?");
+        $stmt->execute([$order_id, $_SESSION['user_id']]);
+    }
     $order = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$order) {
@@ -44,12 +51,14 @@ try {
     $stmt->execute([$order_id]);
     $positions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Rechnungsadresse laden
+    $kunde_id = $order['kunde_id'];
     $stmt = $db->prepare("
         SELECT salutation, first_name, last_name, address, postal_code, city
         FROM kunden
         WHERE id = ?
     ");
-    $stmt->execute([$_SESSION['user_id']]);
+    $stmt->execute([$kunde_id]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // HTML für die Rechnung generieren

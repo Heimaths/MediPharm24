@@ -19,12 +19,21 @@ $(document).ready(function() {
 });
 
 function loadCategories() {
+    // "Alle Produkte" Tab zuerst hinzufügen
+    const categoryList = $('#categoryList');
+    categoryList.empty();
+    categoryList.append(`
+        <a href="#" class="list-group-item list-group-item-action active" 
+           data-category-id="0">
+            Alle Produkte
+        </a>
+    `);
+
+    // Dann die restlichen Kategorien laden
     $.ajax({
         url: '/MediPharm24/Backend/api/categories.php',
         method: 'GET',
         success: function(categories) {
-            const categoryList = $('#categoryList');
-            categoryList.empty();
             categories.forEach((category) => {
                 categoryList.append(`
                     <a href="#" class="list-group-item list-group-item-action" 
@@ -33,11 +42,8 @@ function loadCategories() {
                     </a>
                 `);
             });
-            // Erste Kategorie initial aktivieren und laden
-            if (categories.length > 0) {
-                $('#categoryList a').first().addClass('active');
-                loadProducts(categories[0].id);
-            }
+            // Initial alle Produkte laden
+            loadProducts(0);
         }
     });
 }
