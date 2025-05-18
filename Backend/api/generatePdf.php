@@ -43,10 +43,12 @@ try {
 
     // Bestellpositionen und Benutzerdaten holen
     $stmt = $db->prepare("
-        SELECT bp.*, p.name, p.preis
-        FROM bestellpositionen bp
+        SELECT bp.*, p.name, p.preis, g.code as gutschein_code, g.rabatt as gutschein_rabatt
+        FROM bestellungen b
+        LEFT JOIN gutscheine g ON b.gutschein_id = g.id
+        JOIN bestellpositionen bp ON b.id = bp.bestellung_id
         JOIN produkte p ON bp.produkt_id = p.id
-        WHERE bp.bestellung_id = ?
+        WHERE b.id = ?
     ");
     $stmt->execute([$order_id]);
     $positions = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -151,6 +153,21 @@ try {
                     <td>' . number_format($position['preis'], 2) . ' €</td>
                     <td>' . number_format($row_total, 2) . ' €</td>
                 </tr>';
+    }
+
+    // Gutschein-Rabatt anzeigen, falls vorhanden
+    $gutschein_code = $positions[0]['gutschein_code'] ?? null;
+    $gutschein_rabatt = $positions[0]['gutschein_rabatt'] ?? 0;
+    
+    if ($gutschein_code) {
+        // Begrenze den Rabatt auf den Gesamtbetrag
+        $gutschein_rabatt = min($gutschein_rabatt, $total);
+        $html .= '
+            <tr>
+                <td colspan="3" style="text-align: right;">Gutschein (' . htmlspecialchars($gutschein_code) . '):</td>
+                <td>- ' . number_format($gutschein_rabatt, 2) . ' €</td>
+            </tr>';
+        $total -= $gutschein_rabatt;
     }
 
     $html .= '

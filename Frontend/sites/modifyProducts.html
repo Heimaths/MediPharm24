@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Produktverwaltung - MediPharm24</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../res/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/MediPharm24/Frontend/res/js/nav.js" defer></script>
+    <script src="/MediPharm24/Frontend/res/js/modifyProducts.js" defer></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="../index.html">
+            <img src="../res/img/logo.png" style="height: 80px;" alt="Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav"></ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Produktverwaltung</h2>
+        
+        <!-- Suchleiste und Filter -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Produkte suchen...">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-control" id="categoryFilter">
+                    <option value="">Alle Kategorien</option>
+                    <!-- Kategorien werden dynamisch eingefügt -->
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#productModal">
+                    <i class="fas fa-plus"></i> Neues Produkt
+                </button>
+            </div>
+        </div>
+
+        <!-- Produktliste -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Bild</th>
+                        <th>Name</th>
+                        <th>Kategorie</th>
+                        <th>Preis</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- Produkte werden hier dynamisch eingefügt -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Produkt Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Neues Produkt</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        <div class="form-group">
+                            <label for="productName">Name</label>
+                            <input type="text" class="form-control" id="productName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productDescription">Beschreibung</label>
+                            <textarea class="form-control" id="productDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="productPrice">Preis (€)</label>
+                            <input type="number" class="form-control" id="productPrice" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productCategory">Kategorie</label>
+                            <select class="form-control" id="productCategory" required>
+                                <!-- Kategorien werden dynamisch eingefügt -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="productImage">Produktbild</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="productImageUpload" accept="image/*">
+                                <label class="custom-file-label" for="productImageUpload">Bild auswählen...</label>
+                            </div>
+                            <input type="hidden" id="productImage" name="productImage">
+                            <small class="form-text text-muted">Erlaubte Formate: JPG, PNG, GIF (max. 5MB)</small>
+                            <div id="imagePreview" class="mt-2" style="display: none;">
+                                <img src="" alt="Vorschau" style="max-width: 200px; max-height: 200px;" class="img-thumbnail">
+                                <button type="button" class="btn btn-sm btn-danger ml-2" onclick="removeImage()">
+                                    <i class="fas fa-times"></i> Bild entfernen
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Abbrechen</button>
+                    <button type="button" class="btn btn-primary" id="saveProductBtn">Speichern</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

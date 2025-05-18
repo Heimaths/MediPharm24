@@ -33,10 +33,12 @@ try {
 
     // Bestellpositionen und Benutzerdaten holen
     $stmt = $db->prepare("
-        SELECT bp.*, p.name, p.preis
-        FROM bestellpositionen bp
+        SELECT bp.*, p.name, p.preis, g.code as gutschein_code, g.rabatt as gutschein_rabatt
+        FROM bestellungen b
+        LEFT JOIN gutscheine g ON b.gutschein_id = g.id
+        JOIN bestellpositionen bp ON b.id = bp.bestellung_id
         JOIN produkte p ON bp.produkt_id = p.id
-        WHERE bp.bestellung_id = ?
+        WHERE b.id = ?
     ");
     $stmt->execute([$order_id]);
     $positions = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -49,15 +51,31 @@ try {
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Gesamtbetrag berechnen
+    $total = 0;
+    foreach ($positions as $position) {
+        $total += $position['menge'] * $position['preis'];
+    }
+
+    // Gutschein-Rabatt anwenden, falls vorhanden
+    $gutschein_code = $positions[0]['gutschein_code'] ?? null;
+    $gutschein_rabatt = $positions[0]['gutschein_rabatt'] ?? 0;
+    if ($gutschein_code) {
+        $gutschein_rabatt = min($gutschein_rabatt, $total);
+        $total -= $gutschein_rabatt;
+    }
+
     // Rechnungsdaten zusammenstellen
     $invoice_data = [
         'rechnungsnummer' => $invoice_number,
         'datum' => date('d.m.Y'),
         'kunde' => $user,
         'positionen' => $positions,
-        'gesamtbetrag' => array_sum(array_map(function($pos) {
-            return $pos['menge'] * $pos['preis'];
-        }, $positions))
+        'gutschein' => $gutschein_code ? [
+            'code' => $gutschein_code,
+            'rabatt' => $gutschein_rabatt
+        ] : null,
+        'gesamtbetrag' => $total
     ];
 
     echo json_encode(['status' => 'success', 'invoice' => $invoice_data]);
